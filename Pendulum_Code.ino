@@ -138,7 +138,8 @@ Serial.println("Interrupts set");
           delay(100);
           if(Serial.available()) {
             if(Serial.read() == '$') { // Once Processing has read the gains, it sends the $ symbol and the code proceeds
-              dpfun.Swing_Up();
+              dpfun.Swing_Up(); // Comment this line out to run pendulum facing downwards or with no high voltage inputs.
+                                // Removing Swing_Up can make troubleshooting easier since the system can run on LV only
               Serial.println("Swingup done");
               p = Serial.read();
               p = '1';  
