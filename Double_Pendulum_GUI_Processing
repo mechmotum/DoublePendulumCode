@@ -12,9 +12,15 @@ int Y_AXIS = 1;
 int X_AXIS = 2;
 color b1, b2, c1, c2;
 
+// Background Image Parameters//
+PImage img;
+
+
+
 // Declaring a font style variable 
 PFont font; 
 String text; 
+
 
 // Initializing a String Variable responsible for keeping track of the 
 // currently selected pendulum component 
@@ -94,13 +100,9 @@ void setup(){
   
   size(1000, 1200); // Set size of window
   
-  // Sets the color scheme of the background 
-  b1 = color(255);
-  b2 = color(0);
-  c1 = color(204, 102, 0);
-  c2 = color(0, 102, 153);
 
 
+img=loadImage("matrix.jpg");
 
  // creates an objct for the ControlP5 Library
   cp5= new ControlP5(this); 
@@ -118,9 +120,9 @@ void setup(){
   cp5.addTextfield("Ki").setPosition(700,200).setSize(200,100).setAutoClear(false).setFont(font);
   cp5.addTextfield("Kd").setPosition(100,800).setSize(200,100).setAutoClear(false).setFont(font);
  
-  cp5.addBang("Send_Kp").setPosition(100,300).setSize(200,100).setColorBackground(190).setFont(font);
-  cp5.addBang("Send_Ki").setPosition(700,300).setSize(200,100).setColorBackground(190).setFont(font);
-  cp5.addBang("Send_Kd").setPosition(100,900).setSize(200,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Send_Kp").setPosition(100,300).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Ki").setPosition(700,300).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Kd").setPosition(100,900).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
   
   cp5.addBang("Set_Top_Pendulum").setPosition(700,500).setSize(100,100).setColorBackground(190).setFont(font);
   cp5.addBang("Set_Bottom_Pendulum").setPosition(700,650).setSize(100,100).setColorBackground(190).setFont(font);
@@ -132,36 +134,10 @@ void setup(){
   
 void draw () {
   
-   // *********************** Background Asthetics ************// 
+    //*********************** Background Asthetics ************// 
   
-  setGradient(0, 0, width/2, height, b1, b2, X_AXIS);
-  setGradient(width/2, 0, width/2, height, b2, b1, X_AXIS);
-  // Foreground
-
-}
-
-void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) {
- 
-  noFill();
-
-  if (axis == Y_AXIS) {  // Top to bottom gradient
-    for (int i = y; i <= y+h; i++) {
-      float inter = map(i, y, y+h, 0, 1);
-      color c = lerpColor(c1, c2, inter);
-      stroke(c);
-      line(x, i, x+w, i);
-    }
-  }  
-  else if (axis == X_AXIS) {  // Left to right gradient
-    for (int i = x; i <= x+w; i++) {
-      float inter = map(i, x, x+w, 0, 1);
-      color c = lerpColor(c1, c2, inter);
-      stroke(c);
-      line(i, y, i, y+h);
-    }
-  }
-  
-  
+   image(img,0,0,1000,1200);
+   
   // ************************ Read Recieved *********************// 
   if (myport.available()>0) {
     String myString=myport.readStringUntil(10);
@@ -199,6 +175,7 @@ void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) 
   
   
 }
+
 
 
 // ************************ Code For Button Callbacks **********//
