@@ -1,0 +1,406 @@
+// importing the ControlP5 Library for GUI control and interface implementation 
+// importing the Serial Library to enable a serial communication between your PC 
+// and the Arduino
+import processing.serial.*;
+import controlP5.*;
+
+
+//**************Initializing Variables *****************//
+
+// Background Design Parameters// 
+int Y_AXIS = 1;
+int X_AXIS = 2;
+color b1, b2, c1, c2;
+
+// Declaring a font style variable 
+PFont font; 
+String text; 
+
+// Initializing a String Variable responsible for keeping track of the 
+// currently selected pendulum component 
+String PendComp="NONE";
+
+// Initializing the Display Variables letting the User which motor controller 
+// the user is currently modifying
+String TM_Check="OFF";
+String BM_Check="OFF";
+String Cart_Check="OFF";
+
+//Initilizing the display window's RGB values 
+int TMr=0;
+int TMg=0;
+int TMb=0;
+int BMr=0;
+int BMg=0;
+int BMb=0;
+int Cartr=0;
+int Cartg=0;
+int Cartb=0;
+
+// Initializing the Initial kp, ki and kd string variables for the different 
+// motors that are used and preset in the arduino before the user 
+// changes their values
+String Kp_Int_BM;
+String Ki_Int_BM;
+String Kd_Int_BM;
+String Kp_Int_TM;
+String Ki_Int_TM;
+String Kd_Int_TM;
+String Kp_Int_Cart;
+String Ki_Int_Cart;
+String Kd_Int_Cart;
+String Int_Con_Vals;
+
+// initilizing string variales that will hold the new Kp, Ki, and Kd values 
+// for display as the user enters them into the GUI
+String Kp_Disp="Start Swingup";
+String Ki_Disp="Start Swingup";
+String Kd_Disp="Start Swingup";
+
+// These Strings will be used for Boolean operations later on in the code to check 
+// if any new input has been entered into the selected motor of the double 
+// pendulum
+String Disp_Stat_TM="No New Intput";
+String Disp_Stat_BM="No New Intput";
+String Disp_Stat_Cart="No New Intput";
+
+// Strings used to hold and retain displayed values for the kp,ki, and kd_Disp variables 
+// to show when motors are selected 
+String Kp_Disp_TM;
+String Ki_Disp_TM;
+String Kd_Disp_TM;
+String Kp_Disp_BM;
+String Ki_Disp_BM;
+String Kd_Disp_BM;
+String Kp_Disp_Cart;
+String Ki_Disp_Cart;
+String Kd_Disp_Cart;  
+
+// Creates an object for the ControlP5 Library and the Serial Library
+ControlP5 cp5; 
+Serial myport;
+
+
+
+
+
+// void setup runs once here just like it does in Arduino
+void setup(){
+  
+  
+  size(1000, 1200); // Set size of window
+  
+  // Sets the color scheme of the background 
+  b1 = color(255);
+  b2 = color(0);
+  c1 = color(204, 102, 0);
+  c2 = color(0, 102, 153);
+
+
+
+ // creates an objct for the ControlP5 Library
+  cp5= new ControlP5(this); 
+  String portName=Serial.list()[0];
+  print("Controller port");
+  font = createFont("calibri light bold", 20);
+  
+  myport= new Serial(this,portName,9600);
+
+  
+     textSize(1000);
+  cp5= new ControlP5(this); 
+  
+  cp5.addTextfield("Kp").setPosition(100,200).setSize(200,100).setAutoClear(false).setFont(font);
+  cp5.addTextfield("Ki").setPosition(700,200).setSize(200,100).setAutoClear(false).setFont(font);
+  cp5.addTextfield("Kd").setPosition(100,800).setSize(200,100).setAutoClear(false).setFont(font);
+ 
+  cp5.addBang("Send_Kp").setPosition(100,300).setSize(200,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Send_Ki").setPosition(700,300).setSize(200,100).setColorBackground(190).setFont(font);
+  cp5.addBang("send_Kd").setPosition(100,900).setSize(200,100).setColorBackground(190).setFont(font);
+  
+  cp5.addBang("Set_Top_Pendulum").setPosition(700,500).setSize(100,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Set_Bottom_Pendulum").setPosition(700,650).setSize(100,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Set_Cart").setPosition(700,800).setSize(100,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Swing_up").setPosition(450,1000).setSize(100,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Initialize_Con").setPosition(450,800).setSize(100,100).setColorBackground(190).setFont(font);
+   
+} 
+  
+void draw () {
+  
+   // *********************** Background Asthetics ************// 
+  
+  setGradient(0, 0, width/2, height, b1, b2, X_AXIS);
+  setGradient(width/2, 0, width/2, height, b2, b1, X_AXIS);
+  // Foreground
+
+}
+
+void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) {
+ 
+  noFill();
+
+  if (axis == Y_AXIS) {  // Top to bottom gradient
+    for (int i = y; i <= y+h; i++) {
+      float inter = map(i, y, y+h, 0, 1);
+      color c = lerpColor(c1, c2, inter);
+      stroke(c);
+      line(x, i, x+w, i);
+    }
+  }  
+  else if (axis == X_AXIS) {  // Left to right gradient
+    for (int i = x; i <= x+w; i++) {
+      float inter = map(i, x, x+w, 0, 1);
+      color c = lerpColor(c1, c2, inter);
+      stroke(c);
+      line(i, y, i, y+h);
+    }
+  }
+  
+  
+  // ************************ Read Recieved *********************// 
+  if (myport.available()>0) {
+    String myString=myport.readStringUntil(10);
+    if  (myString != null) {
+      println(myString);
+    }
+  }
+  textSize(32);
+  fill(0);
+  // Double Pendulum Section selection 
+  rect(800,500,100,100);
+  rect(800,650,100,100);
+  rect(800,800,100,100);
+  
+  //Controller Value Display 
+  rect(100,100,200,100);
+  rect(100,700,200,100);
+  rect(700,100,200,100);
+  
+  
+  fill(TMr,TMg,TMb);
+  text(TM_Check,815,560);
+  fill(BMr,BMg,BMb);
+  text(BM_Check,815,710);
+  fill(Cartr,Cartg,Cartb);
+  text(Cart_Check,815,860);
+  textSize(28);
+  fill(255);
+  text(Kp_Disp, 110,165);
+  fill(255);
+  text(Ki_Disp, 710,165);
+  fill(255);
+  text(Kd_Disp, 110,765);
+  
+  
+  
+}
+
+
+// ************************ Code For Button Callbacks **********//
+void Send_Kp(){
+  
+  String Kp_text=cp5.get(Textfield.class,"Kp").getText();
+  float  Kp_Float= parseFloat(Kp_text)*10000;
+         Kp_text=str(Kp_Float);
+  if (PendComp=="TM"){
+        Disp_Stat_TM="Info Sent";
+      Kp_Disp=Kp_text;}
+        else if (PendComp=="BM"){
+        Disp_Stat_BM="Info Sent";
+      Kp_Disp=Kp_text;}
+        else if (PendComp=="Cart"){
+        Disp_Stat_Cart="Info Sent";
+      Kp_Disp=Kp_text;}
+  
+ myport.write(PendComp+"%"+"Kp "+ Kp_text+'\n');
+  
+  
+}
+
+void Send_Kd() {
+  
+ String Kd_text=cp5.get(Textfield.class,"Kd").getText();
+ float  Kd_Float= parseFloat(Kd_text)*10000;
+        Kd_text=str(Kd_Float);
+ 
+ if (PendComp=="TM"){
+        Disp_Stat_TM="Info Sent";
+      Kd_Disp_TM=Kd_text;}
+        else if (PendComp=="BM"){
+        Disp_Stat_BM="Info Sent";
+      Kd_Disp_BM=Kd_text;}
+        else if (PendComp=="Cart"){
+        Disp_Stat_Cart="Info Sent";
+      Kd_Disp_Cart=Kd_text;}
+        
+ myport.write(PendComp +"%"+ "Kd "+ Kd_text+'\n');
+ 
+}
+
+void Send_Ki() {
+  
+ String Ki_text=cp5.get(Textfield.class,"Ki").getText();
+ float  Ki_Float= parseFloat(Ki_text)*10000;
+        Ki_text=str(Ki_Float);
+        
+        if (PendComp=="TM"){
+        Disp_Stat_TM="Info Sent";
+        Ki_Disp_TM=Ki_text;}
+        else if (PendComp=="BM"){
+        Disp_Stat_BM="Info Sent";
+      Ki_Disp_BM=Ki_text;}
+        else if (PendComp=="Cart"){
+        Disp_Stat_Cart="Info Sent";
+      Ki_Disp_Cart=Ki_text;}
+        
+        
+ 
+ 
+ myport.write(PendComp+"%"+"Ki "+ Ki_text+'\n');
+ 
+}
+
+void Set_Top_Pendulum() { 
+  
+  PendComp="TM"; 
+ TM_Check="ON";
+ BM_Check="OFF";
+Cart_Check="OFF";
+  TMr=0;
+ TMg=255;
+ TMb=0;
+ BMr=255;
+ BMg=0;
+ BMb=0;
+ Cartr=255;
+ Cartg=0;
+ Cartb=0;
+
+  if (Disp_Stat_TM=="No New Intput"){
+  Kp_Disp=Kp_Int_TM;
+ Ki_Disp=Ki_Int_TM;
+ Kd_Disp=Kd_Int_TM;
+}
+else{
+   Kp_Disp=Kp_Disp_TM;
+ Ki_Disp=Ki_Disp_TM;
+ Kd_Disp=Kd_Disp_TM;}
+  
+} 
+
+void Set_Bottom_Pendulum() {
+  PendComp="BM";
+ TM_Check="OFF";
+ BM_Check="ON";
+ Cart_Check="OFF";
+ TMr=255;
+ TMg=0;
+ TMb=0;
+ BMr=0;
+ BMg=255;
+ BMb=0;
+ Cartr=255;
+ Cartg=0;
+ Cartb=0;
+ 
+ if (Disp_Stat_BM=="No New Intput"){
+  Kp_Disp=Kp_Int_BM;
+ Ki_Disp=Ki_Int_BM;
+ Kd_Disp=Kd_Int_BM;
+}
+else{
+   Kp_Disp=Kp_Disp_BM;
+ Ki_Disp=Ki_Disp_BM;
+ Kd_Disp=Kd_Disp_BM;}
+} 
+
+
+void Set_Cart() { 
+  PendComp="Cart";
+TM_Check="OFF";
+ BM_Check="OFF";
+Cart_Check="ON";
+ TMr=255;
+ TMg=0;
+ TMb=0;
+ BMr=255;
+ BMg=0;
+ BMb=0;
+ Cartr=0;
+ Cartg=255;
+ Cartb=0;
+ if (Disp_Stat_Cart=="No New Intput"){
+  Kp_Disp=Kp_Int_Cart;
+ Ki_Disp=Ki_Int_Cart;
+ Kd_Disp=Kd_Int_Cart;
+}
+else{
+   Kp_Disp=Kp_Disp_Cart;
+ Ki_Disp=Ki_Disp_Cart;
+ Kd_Disp=Kd_Disp_Cart;}
+} 
+
+void Swing_up() {
+  myport.write("$");
+}
+
+void Initialize_Con(){ 
+  
+
+  
+  myport.write("@"); 
+  
+  while(myport.available()==0){
+    print("retreiving data");
+  }
+  
+ParseIntVals();
+  
+  
+  }
+  
+  
+void ParseIntVals() {
+  
+  print("\n");
+  print("ParseIntVals Called");
+  while (myport.available() !=0){
+  if (myport.available()>0) {
+     
+    print("\n");
+    print("conditional statement activated");
+    print("\n");
+  Int_Con_Vals=myport.readStringUntil(10);
+   
+    
+    if (myport.available()==0){
+    break;
+  }
+  
+  }
+  }
+  print("\n");
+  print("While loop broken!");
+  print("\n"+"Values Recieved are:"+"||"+Int_Con_Vals+"||");
+  
+  
+   int activateSplit=1;
+    if  (activateSplit==1) {
+   // String Int_Con_Vals=myport.readStringUntil(200);
+    String Con_String_Array[]=Int_Con_Vals.split(",");
+    Kp_Int_BM=Con_String_Array[0];
+    Ki_Int_BM=Con_String_Array[1];
+    Kd_Int_BM=Con_String_Array[2];
+    Kp_Int_TM=Con_String_Array[3];
+    Ki_Int_TM=Con_String_Array[4];
+    Kd_Int_TM=Con_String_Array[5];
+    Kp_Int_Cart=Con_String_Array[6];
+    Ki_Int_Cart=Con_String_Array[7];
+    Kd_Int_Cart=Con_String_Array[8];
+    
+    print("Hi Dor The value for Kp TM is ");
+    print("\n");
+    print(Kp_Int_TM);
+    }
+    }
