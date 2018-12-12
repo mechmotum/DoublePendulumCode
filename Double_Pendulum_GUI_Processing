@@ -75,6 +75,10 @@ String Kd_Disp_BM;
 String Kp_Disp_Cart;
 String Ki_Disp_Cart;
 String Kd_Disp_Cart;  
+String Kp_Val;
+String Ki_Val;
+String Kd_Val;
+
 
 // Creates an object for the ControlP5 Library and the Serial Library
 ControlP5 cp5; 
@@ -116,7 +120,7 @@ void setup(){
  
   cp5.addBang("Send_Kp").setPosition(100,300).setSize(200,100).setColorBackground(190).setFont(font);
   cp5.addBang("Send_Ki").setPosition(700,300).setSize(200,100).setColorBackground(190).setFont(font);
-  cp5.addBang("send_Kd").setPosition(100,900).setSize(200,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Send_Kd").setPosition(100,900).setSize(200,100).setColorBackground(190).setFont(font);
   
   cp5.addBang("Set_Top_Pendulum").setPosition(700,500).setSize(100,100).setColorBackground(190).setFont(font);
   cp5.addBang("Set_Bottom_Pendulum").setPosition(700,650).setSize(100,100).setColorBackground(190).setFont(font);
@@ -198,20 +202,29 @@ void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) 
 
 
 // ************************ Code For Button Callbacks **********//
+
+
+// *************************** This Section Contains the Code for the Buttons that Send PID Values to the Arduino Mega *****//
 void Send_Kp(){
   
   String Kp_text=cp5.get(Textfield.class,"Kp").getText();
+  Kp_Val=cp5.get(Textfield.class,"Kp").getText();
   float  Kp_Float= parseFloat(Kp_text)*10000;
          Kp_text=str(Kp_Float);
   if (PendComp=="TM"){
         Disp_Stat_TM="Info Sent";
-      Kp_Disp=Kp_text;}
+      Kp_Disp_TM=Kp_Val;
+      Kp_Disp=Kp_Val;}
         else if (PendComp=="BM"){
         Disp_Stat_BM="Info Sent";
-      Kp_Disp=Kp_text;}
+      Kp_Disp_BM=Kp_Val;
+    Kp_Disp=Kp_Val;}
         else if (PendComp=="Cart"){
         Disp_Stat_Cart="Info Sent";
-      Kp_Disp=Kp_text;}
+      Kp_Disp_Cart=Kp_Val;
+    Kp_Disp=Kp_Val;}
+      
+      
   
  myport.write(PendComp+"%"+"Kp "+ Kp_text+'\n');
   
@@ -221,18 +234,22 @@ void Send_Kp(){
 void Send_Kd() {
   
  String Kd_text=cp5.get(Textfield.class,"Kd").getText();
+ Kd_Val=cp5.get(Textfield.class,"Kd").getText();
  float  Kd_Float= parseFloat(Kd_text)*10000;
         Kd_text=str(Kd_Float);
  
  if (PendComp=="TM"){
         Disp_Stat_TM="Info Sent";
-      Kd_Disp_TM=Kd_text;}
+      Kd_Disp_TM=Kd_Val;
+    Kd_Disp=Kd_Val;}
         else if (PendComp=="BM"){
         Disp_Stat_BM="Info Sent";
-      Kd_Disp_BM=Kd_text;}
+      Kd_Disp_BM=Kd_Val;
+    Kd_Disp=Kd_Val;}
         else if (PendComp=="Cart"){
         Disp_Stat_Cart="Info Sent";
-      Kd_Disp_Cart=Kd_text;}
+      Kd_Disp_Cart=Kd_Val;
+    Kd_Disp=Kd_Val;}
         
  myport.write(PendComp +"%"+ "Kd "+ Kd_text+'\n');
  
@@ -241,23 +258,28 @@ void Send_Kd() {
 void Send_Ki() {
   
  String Ki_text=cp5.get(Textfield.class,"Ki").getText();
+ Ki_Val=cp5.get(Textfield.class,"Ki").getText();
  float  Ki_Float= parseFloat(Ki_text)*10000;
         Ki_text=str(Ki_Float);
         
         if (PendComp=="TM"){
         Disp_Stat_TM="Info Sent";
-        Ki_Disp_TM=Ki_text;}
+        Ki_Disp_TM=Ki_Val;
+      Ki_Disp=Ki_Val;}
         else if (PendComp=="BM"){
         Disp_Stat_BM="Info Sent";
-      Ki_Disp_BM=Ki_text;}
+      Ki_Disp_BM=Ki_Val;
+    Ki_Disp=Ki_Val;}
         else if (PendComp=="Cart"){
         Disp_Stat_Cart="Info Sent";
-      Ki_Disp_Cart=Ki_text;}
+      Ki_Disp_Cart=Ki_Val;
+    Ki_Disp=Ki_Val;}
         
         
  
  
  myport.write(PendComp+"%"+"Ki "+ Ki_text+'\n');
+ 
  
 }
 
@@ -283,9 +305,25 @@ Cart_Check="OFF";
  Kd_Disp=Kd_Int_TM;
 }
 else{
-   Kp_Disp=Kp_Disp_TM;
+   if (Kp_Disp_TM==null){
+ Kp_Disp=Kp_Int_TM;}
+ else{
+Kp_Disp=Kp_Disp_TM;
+ }
+ 
+ if (Ki_Disp_TM==null){
+Ki_Disp=Ki_Int_TM;}
+else {
  Ki_Disp=Ki_Disp_TM;
+}
+
+if(Kd_Disp_TM==null) {
+Kd_Disp=Kd_Int_TM;
+ }
+ else{
  Kd_Disp=Kd_Disp_TM;}
+}
+
   
 } 
 
@@ -310,9 +348,25 @@ void Set_Bottom_Pendulum() {
  Kd_Disp=Kd_Int_BM;
 }
 else{
-   Kp_Disp=Kp_Disp_BM;
+   if (Kp_Disp_BM==null){
+ Kp_Disp=Kp_Int_BM;}
+ else{
+Kp_Disp=Kp_Disp_BM;
+ }
+ 
+ if (Ki_Disp_BM==null){
+Ki_Disp=Ki_Int_BM;}
+else {
  Ki_Disp=Ki_Disp_BM;
+}
+
+if(Kd_Disp_BM==null) {
+Kd_Disp=Kd_Int_BM;
+ }
+ else{
  Kd_Disp=Kd_Disp_BM;}
+}
+
 } 
 
 
@@ -336,9 +390,25 @@ Cart_Check="ON";
  Kd_Disp=Kd_Int_Cart;
 }
 else{
-   Kp_Disp=Kp_Disp_Cart;
+ 
+if (Kp_Disp_Cart==null){
+ Kp_Disp=Kp_Int_Cart;}
+ else{
+Kp_Disp=Kp_Disp_Cart;
+ }
+ 
+ if (Ki_Disp_Cart==null){
+Ki_Disp=Ki_Int_Cart;}
+else {
  Ki_Disp=Ki_Disp_Cart;
+}
+
+if(Kd_Disp_Cart==null) {
+Kd_Disp=Kd_Int_Cart;
+ }
+ else{
  Kd_Disp=Kd_Disp_Cart;}
+}
 } 
 
 void Swing_up() {
