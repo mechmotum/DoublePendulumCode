@@ -22,6 +22,7 @@ PFont font;
 String text; 
 
 
+
 // Initializing a String Variable responsible for keeping track of the 
 // currently selected pendulum component 
 String PendComp="NONE";
@@ -42,6 +43,8 @@ int BMb=0;
 int Cartr=0;
 int Cartg=0;
 int Cartb=0;
+
+
 
 // Initializing the Initial kp, ki and kd string variables for the different 
 // motors that are used and preset in the arduino before the user 
@@ -86,6 +89,7 @@ String Ki_Val;
 String Kd_Val;
 
 
+
 // Creates an object for the ControlP5 Library and the Serial Library
 ControlP5 cp5; 
 Serial myport;
@@ -101,7 +105,9 @@ void setup(){
 
 
 // Sets Size of Window 
-size(1000, 1200); 
+
+size(displayWidth, displayHeight); 
+surface.setSize(width/2,height);
 
 // Loads Background image into variable
 img=loadImage("matrix.jpg");
@@ -134,17 +140,17 @@ myport= new Serial(this,portName,9600);
   cp5= new ControlP5(this); 
  // *********************** ControlP5 Textfields and Bangs ********// 
   // These lines govern the Text field entry areas in the GUI 
-  cp5.addTextfield("Kp").setPosition(100,200).setSize(200,100).setAutoClear(false).setFont(font);
-  cp5.addTextfield("Ki").setPosition(700,200).setSize(200,100).setAutoClear(false).setFont(font);
-  cp5.addTextfield("Kd").setPosition(100,800).setSize(200,100).setAutoClear(false).setFont(font);
+  cp5.addTextfield("Kp").setPosition(width/10,200).setSize(width/5,75).setAutoClear(false).setFont(font);
+  cp5.addTextfield("Ki").setPosition(700,200).setSize(width/5,75).setAutoClear(false).setFont(font);
+  cp5.addTextfield("Kd").setPosition(width/10,800).setSize(width/5,75).setAutoClear(false).setFont(font);
  
  // These are what defines the Bang properties
  // a Bang is basically a button that calls a function when pressed
  // These three in particular call the functions that sends data over the serial
  // port to the arduino
-  cp5.addBang("Send_Kp").setPosition(100,300).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
-  cp5.addBang("Send_Ki").setPosition(700,300).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
-  cp5.addBang("Send_Kd").setPosition(100,900).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Kp").setPosition(width/10,300).setSize(width/5,75).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Ki").setPosition(700,300).setSize(width/5,75).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Kd").setPosition(width/10,900).setSize(width/5,75).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
   
 // These buttons allow the user to switch between motors 
   cp5.addBang("Set_Top_Pendulum").setPosition(700,500).setSize(100,100).setColorBackground(190).setFont(font);
@@ -159,7 +165,7 @@ void draw () {
   
     //*********************** Background Asthetics ************// 
   
-   image(img,0,0,1000,1200);
+   image(img,0,0,width,height);
    
   // ************************ Read Recieved *********************// 
   if (myport.available()>0) {
