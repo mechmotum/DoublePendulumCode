@@ -97,33 +97,56 @@ Serial myport;
 // void setup runs once here just like it does in Arduino
 void setup(){
   
-  
-  size(1000, 1200); // Set size of window
-  
+// ************************ Inital Display Settings ***************// 
 
 
+// Sets Size of Window 
+size(1000, 1200); 
+
+// Loads Background image into variable
 img=loadImage("matrix.jpg");
 
- // creates an objct for the ControlP5 Library
-  cp5= new ControlP5(this); 
-  String portName=Serial.list()[0];
-  print("Controller port");
-  font = createFont("calibri light bold", 20);
+//sets style of font
+font = createFont("calibri licrght bold", 20);
+
+
+// ***************** Serial and Control properties ****// 
+// creates an object for the ControlP5 Library
+cp5= new ControlP5(this); 
   
-  myport= new Serial(this,portName,9600);
+//Identifies port number that arduino is connected to via USB
+//The number inside the brackets correspond to the COM# of the USB port
+String portName=Serial.list()[0];
+
+
+print("Controller port");
+
+// Initializes Serial Port Communication
+// Here you can set the com port number and the baud rate 
+// right now the baud rate is set to 9600, make sure this value is 
+// same value that the arduino
+myport= new Serial(this,portName,9600);
 
   
-     textSize(1000);
+ textSize(1000);
+ 
+ //Initializes object for controlp5 library 
   cp5= new ControlP5(this); 
-  
+ // *********************** ControlP5 Textfields and Bangs ********// 
+  // These lines govern the Text field entry areas in the GUI 
   cp5.addTextfield("Kp").setPosition(100,200).setSize(200,100).setAutoClear(false).setFont(font);
   cp5.addTextfield("Ki").setPosition(700,200).setSize(200,100).setAutoClear(false).setFont(font);
   cp5.addTextfield("Kd").setPosition(100,800).setSize(200,100).setAutoClear(false).setFont(font);
  
+ // These are what defines the Bang properties
+ // a Bang is basically a button that calls a function when pressed
+ // These three in particular call the functions that sends data over the serial
+ // port to the arduino
   cp5.addBang("Send_Kp").setPosition(100,300).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
   cp5.addBang("Send_Ki").setPosition(700,300).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
   cp5.addBang("Send_Kd").setPosition(100,900).setSize(200,100).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
   
+// These buttons allow the user to switch between motors 
   cp5.addBang("Set_Top_Pendulum").setPosition(700,500).setSize(100,100).setColorBackground(190).setFont(font);
   cp5.addBang("Set_Bottom_Pendulum").setPosition(700,650).setSize(100,100).setColorBackground(190).setFont(font);
   cp5.addBang("Set_Cart").setPosition(700,800).setSize(100,100).setColorBackground(190).setFont(font);
@@ -140,6 +163,7 @@ void draw () {
    
   // ************************ Read Recieved *********************// 
   if (myport.available()>0) {
+    // Reads string until a new line is read 
     String myString=myport.readStringUntil(10);
     if  (myString != null) {
       println(myString);
@@ -259,6 +283,10 @@ void Send_Ki() {
  
  
 }
+
+
+// *************** This Section Govers the Code that allows the user to switch between motors to adjust the PID values *****// 
+
 
 void Set_Top_Pendulum() { 
   
@@ -407,7 +435,7 @@ ParseIntVals();
   
   }
   
-  
+// parsing function that breaks initial pid values string from arduino // 
 void ParseIntVals() {
   
   print("\n");
@@ -446,8 +474,7 @@ void ParseIntVals() {
     Ki_Int_Cart=Con_String_Array[7];
     Kd_Int_Cart=Con_String_Array[8];
     
-    print("Hi Dor The value for Kp TM is ");
-    print("\n");
-    print(Kp_Int_TM);
+    
+ 
     }
     }
