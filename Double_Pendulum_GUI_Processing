@@ -131,6 +131,7 @@ font = createFont("calibri licrght bold", 20);
 // ***************** Serial and Control properties ****// 
 // creates an object for the ControlP5 Library
 cp5= new ControlP5(this); 
+ControlFont cf1 = new ControlFont(createFont("Arial",height/90));
   
 //Identifies port number that arduino is connected to via USB
 //The number inside the brackets correspond to the COM# of the USB port
@@ -146,30 +147,32 @@ print("Controller port");
 myport= new Serial(this,portName,9600);
 
   
- textSize(1000);
+ 
  
  //Initializes object for controlp5 library 
   cp5= new ControlP5(this); 
+  
+ 
  // *********************** ControlP5 Textfields and Bangs ********// 
   // These lines govern the Text field entry areas in the GUI 
-  cp5.addTextfield("Kp").setPosition(Point_Kp_Disp_W,Point_Kp_Disp_H+100).setSize(width/5,75).setAutoClear(false).setFont(font);
-  cp5.addTextfield("Ki").setPosition(Point_Ki_Disp_W,Point_Ki_Disp_H+100).setSize(width/5,75).setAutoClear(false).setFont(font);
-  cp5.addTextfield("Kd").setPosition(Point_Kd_Disp_W,Point_Kd_Disp_H+100).setSize(width/5,75).setAutoClear(false).setFont(font);
+  cp5.addTextfield("Kp").setPosition(Point_Kp_Disp_W,Point_Kp_Disp_H+100).setSize(width/5,height/15).setAutoClear(false).setFont(cf1);
+  cp5.addTextfield("Ki").setPosition(Point_Ki_Disp_W,Point_Ki_Disp_H+100).setSize(width/5,height/15).setAutoClear(false).setFont(cf1);
+  cp5.addTextfield("Kd").setPosition(Point_Kd_Disp_W,Point_Kd_Disp_H+100).setSize(width/5,height/15).setAutoClear(false).setFont(cf1);
  
  // These are what defines the Bang properties
  // a Bang is basically a button that calls a function when pressed
  // These three in particular call the functions that sends data over the serial
  // port to the arduino
-  cp5.addBang("Send_Kp").setPosition(Point_Kp_Disp_W,Point_Kp_Disp_H+200).setSize(width/5,75).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
-  cp5.addBang("Send_Ki").setPosition(Point_Ki_Disp_W,Point_Ki_Disp_H+200).setSize(width/5,75).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
-  cp5.addBang("Send_Kd").setPosition(Point_Kd_Disp_W,Point_Kd_Disp_H+200).setSize(width/5,75).setColorBackground(190).setFont(font).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Kp").setPosition(Point_Kp_Disp_W,Point_Kp_Disp_H+200).setSize(width/5,height/15).setColorBackground(190).setFont(cf1).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Ki").setPosition(Point_Ki_Disp_W,Point_Ki_Disp_H+200).setSize(width/5,height/15).setColorBackground(190).setFont(cf1).setColorBackground(color(0)).setColorForeground(color(255,0,0));
+  cp5.addBang("Send_Kd").setPosition(Point_Kd_Disp_W,Point_Kd_Disp_H+200).setSize(width/5,height/15).setColorBackground(190).setFont(cf1).setColorBackground(color(0)).setColorForeground(color(255,0,0));
   
 // These buttons allow the user to switch between motors 
-  cp5.addBang("Set_Top_Pendulum").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3).setSize(100,100).setColorBackground(190).setFont(font);
-  cp5.addBang("Set_Bottom_Pendulum").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3+200).setSize(100,100).setColorBackground(190).setFont(font);
-  cp5.addBang("Set_Cart").setPosition(Point_Ki_Disp_W,Point_Ki_Disp_H+height/3+400).setSize(100,100).setColorBackground(190).setFont(font);
-  cp5.addBang("Swing_up").setPosition(width/2-50,height/13*10).setSize(100,100).setColorBackground(190).setFont(font);
-  cp5.addBang("Initialize_Con").setPosition(width/2-50,height/15*10).setSize(100,100).setColorBackground(190).setFont(font);
+  cp5.addBang("Set_Top_Pendulum").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3).setSize(100,height/15).setColorBackground(190).setFont(cf1);
+  cp5.addBang("Set_Bottom_Pendulum").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3+200).setSize(100,height/15).setColorBackground(190).setFont(cf1);
+  cp5.addBang("Set_Cart").setPosition(Point_Ki_Disp_W,Point_Ki_Disp_H+height/3+400).setSize(100,height/15).setColorBackground(190).setFont(cf1);
+  cp5.addBang("Swing_up").setPosition(width/2-50,height/13*10).setSize(100,height/15).setColorBackground(190).setFont(cf1);
+  cp5.addBang("Initialize_Con").setPosition(width/2-50,height/15*10).setSize(100,height/15).setColorBackground(190).setFont(cf1);
    
 } 
   
@@ -187,17 +190,17 @@ void draw () {
       println(myString);
     }
   }
-  textSize(32);
+  textSize(height/90);
   fill(0);
   // Double Pendulum Section selection 
-  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3,100,100);
-  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+200,100,100);
-  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+400,100,100);
+  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3,height/15,height/15);
+  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+200,height/15,height/15);
+  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+400,height/15,height/15);
   
   //Controller Value Display 
-  rect(Point_Kp_Disp_W,Point_Kp_Disp_H,200,100);
-  rect(Point_Kd_Disp_W,Point_Kd_Disp_H,200,100);
-  rect(Point_Ki_Disp_W,Point_Ki_Disp_H,200,100);
+  rect(Point_Kp_Disp_W,Point_Kp_Disp_H,width/10*2,height/15);
+  rect(Point_Kd_Disp_W,Point_Kd_Disp_H,width/10*2,height/15);
+  rect(Point_Ki_Disp_W,Point_Ki_Disp_H,width/10*2,height/15);
   
   
   fill(TMr,TMg,TMb);
@@ -206,7 +209,7 @@ void draw () {
   text(BM_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+260);
   fill(Cartr,Cartg,Cartb);
   text(Cart_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+460);
-  textSize(28);
+  textSize(height/90);
   fill(255);
   text(Kp_Disp, Point_Kp_Disp_W+10,Point_Kp_Disp_H+65);
   fill(255);
