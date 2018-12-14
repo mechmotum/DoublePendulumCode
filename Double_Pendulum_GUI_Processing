@@ -62,9 +62,9 @@ String Int_Con_Vals;
 
 // initilizing string variales that will hold the new Kp, Ki, and Kd values 
 // for display as the user enters them into the GUI
-String Kp_Disp="Start Swingup";
-String Ki_Disp="Start Swingup";
-String Kd_Disp="Start Swingup";
+String Kp_Disp="Type Kp Vals in box below";
+String Ki_Disp="Type Kd Vals in box below";
+String Kd_Disp="Type Ki Vals in box below";
 
 // These Strings will be used for Boolean operations later on in the code to check 
 // if any new input has been entered into the selected motor of the double 
@@ -93,7 +93,7 @@ int Point_Kd_Disp_W;
 int Point_Kp_Disp_H;
 int Point_Ki_Disp_H;
 int Point_Kd_Disp_H;
-
+boolean BackImage;
 
 
 // Creates an object for the ControlP5 Library and the Serial Library
@@ -169,18 +169,29 @@ myport= new Serial(this,portName,9600);
   
 // These buttons allow the user to switch between motors 
   cp5.addBang("Set_Top_Pendulum").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3).setSize(100,height/15).setColorBackground(190).setFont(cf1);
-  cp5.addBang("Set_Bottom_Pendulum").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3+200).setSize(100,height/15).setColorBackground(190).setFont(cf1);
-  cp5.addBang("Set_Cart").setPosition(Point_Ki_Disp_W,Point_Ki_Disp_H+height/3+400).setSize(100,height/15).setColorBackground(190).setFont(cf1);
+  cp5.addBang("Set_Bottom_Pendulum").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3+height/6).setSize(100,height/15).setColorBackground(190).setFont(cf1);
+  cp5.addBang("Set_Cart").setPosition(Point_Ki_Disp_W,Point_Kp_Disp_H+height/3+height/3).setSize(100,height/15).setColorBackground(190).setFont(cf1);
   cp5.addBang("Swing_up").setPosition(width/2-50,height/13*10).setSize(100,height/15).setColorBackground(190).setFont(cf1);
   cp5.addBang("Initialize_Con").setPosition(width/2-50,height/15*10).setSize(100,height/15).setColorBackground(190).setFont(cf1);
    
+    cp5.addToggle("BackImage")
+     .setPosition(width/8,height-height/10*2)
+     .setSize(width/10,height/30)
+     .setFont(cf1);
+     ;
 } 
   
 void draw () {
   
     //*********************** Background Asthetics ************// 
-  
-   image(img,0,0,width,height);
+  if (BackImage==true)  
+  {
+   img=loadImage("edge.jpg");
+  }
+  else if (BackImage==false){
+    img=loadImage("matrix.jpg");
+ }
+ image(img,0,0,width,height);
    
   // ************************ Read Recieved *********************// 
   if (myport.available()>0) {
@@ -194,8 +205,8 @@ void draw () {
   fill(0);
   // Double Pendulum Section selection 
   rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3,height/15,height/15);
-  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+200,height/15,height/15);
-  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+400,height/15,height/15);
+  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+height/6,height/15,height/15);
+  rect(Point_Ki_Disp_W+100,Point_Kp_Disp_H+height/3+height/3,height/15,height/15);
   
   //Controller Value Display 
   rect(Point_Kp_Disp_W,Point_Kp_Disp_H,width/10*2,height/15);
@@ -204,11 +215,11 @@ void draw () {
   
   
   fill(TMr,TMg,TMb);
-  text(TM_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+60);
+  text(TM_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+height/20);
   fill(BMr,BMg,BMb);
-  text(BM_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+260);
+  text(BM_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+height*260/1200);
   fill(Cartr,Cartg,Cartb);
-  text(Cart_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+460);
+  text(Cart_Check,Point_Ki_Disp_W+130,Point_Kp_Disp_H+height/3+height*460/1200);
   textSize(height/90);
   fill(255);
   text(Kp_Disp, Point_Kp_Disp_W+10,Point_Kp_Disp_H+65);
