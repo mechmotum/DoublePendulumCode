@@ -1,14 +1,15 @@
 #include "Serial_Com.h"
 
+// This section of code governs serial data that passes through the arduino to the user's PC. 
 void Serial_Com::Parse() {
-  
+ 
   if(Serial.available()){ // if there is data in the buffer
     char c = Serial.read(); // reads the character in the buffer
-    if(c=='\n') { // if the new line character is sent (like at end of a command)
+    if(c=='\n') { // if the new line character is sent (like at end of a command) this acts as a deliminator
       Serial.println(command);
       // incomming commands are of the form "BM%Kp 10300"
-      motor = command.substring(0, command.indexOf("%")); // Identifies which motor
-      gain = command.substring(command.indexOf("%") + 1,command.indexOf(" ")); // Identifies which gain
+      motor = command.substring(0, command.indexOf("%")); // Identifies Motor ID
+      gain = command.substring(command.indexOf("%") + 1,command.indexOf(" ")); // Identifies which gain (Kp Ki Kd) 
       value = command.substring(command.indexOf(" ") + 1); // Identifies value of gain. Note: incomming gains are multiplied by 10000
       unscaledGain = value.toInt(); // Converts value to integer. This is why the gains are x10000. Cannot convert string to float directly
       newGainValue = (float) unscaledGain; // Convert integer to float
@@ -33,9 +34,9 @@ void Serial_Com::Parse() {
 void Serial_Com::Update_Gains(){
 
   if(motor=="TM") {
-    if(gain.equalsIgnoreCase("Kp")) { 
+    if(gain.equalsIgnoreCase("Kp")) { // Reads value ignoring captialization of letters
       PID_TM_Kp = newGainValue;
-      Serial.print("PID_TM_Kp = ");
+      Serial.print("PID_TM_Kp = "); //Serial Print used to send information back through the serial monitor
       Serial.println(PID_TM_Kp,5);
       }   
     else if(gain.equalsIgnoreCase("Kd")) {
